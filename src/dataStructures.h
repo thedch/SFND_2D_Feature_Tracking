@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <opencv2/core.hpp>
+#include <deque>
 
 
 struct DataFrame { // represents the available sensor information at the same time instance
@@ -13,60 +14,37 @@ struct DataFrame { // represents the available sensor information at the same ti
     std::vector<cv::DMatch> kptMatches; // keypoint matches between previous and current frame
 };
 
+
 template <class T>
 class RingBuffer {
 public:
-    explicit RingBuffer(size_t size) :
-        buf_(std::unique_ptr<T[]>(new T[size])),
-        max_size_(size)
-        { /* empty */ }
-
-    void reset() {
-        head_ = tail_;
-        full_ = false;
+    RingBuffer(size_t size) {
+        size_t max_size_ = size;
+        std::deque<T> _buffer;
     }
 
-    bool empty() {
-        return (!full_ && (head_ == tail_));
+    size_t size() {
+        return _buffer.size();
     }
 
-    bool full() {
-        return full_;
-    }
-
-    size_t capacity() const {
-        return max_size_;
-    }
-
-    void put(T item) {
-        buf_[head_] = item;
-
-        if (full_) {
-            tail_ = (tail_ + 1) % max_size_;
+    void push_back(T item) {
+        _buffer.push_back(item);
+        if (_buffer.size() > max_size_) {
+            _buffer.pop_front();
         }
-
-        head_ = (head_ + 1) % max_size_;
-        full_ = (head_ == tail_);
     }
 
     T get() {
-        if (empty()) {
-            return T(); // or throw error..?
-        }
+        return _buffer.pop_front();
+    }
 
-        auto val = buf_[tail_];
-        full_ = false;
-        tail_ = (tail_ + 1) % max_size_;
-
-        return val;
+    typename std::deque<T>::iterator end() {
+        return _buffer.end();
     }
 
 private:
-    size_t head_ = 0;
-    size_t tail_ = 0;
-    const size_t max_size_;
-    bool full_ = false;
-    std::unique_ptr<T[]> buf_;
+    size_t max_size_;
+    std::deque<T> _buffer;
 };
 
 

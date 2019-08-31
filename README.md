@@ -22,12 +22,12 @@ See the classroom instruction and code comments for more details on each of thes
   * This must be compiled from source using the `-D OPENCV_ENABLE_NONFREE=ON` cmake flag for testing the SIFT and SURF detectors.
   * The OpenCV 4.1.0 source code can be found [here](https://github.com/opencv/opencv/tree/4.1.0)
   ```
+  # first, clone opencv and opencv_contrib
   cd opencv
   mkdir build
   cd build
   cmake -D OPENCV_ENABLE_NONFREE=ON -D OPENCV_EXTRA_MODULES_PATH=/Users/daniel/code/opencv_contrib/modules ..
   make -j
-  make install
   ```
 * gcc/g++ >= 5.4
   * Linux: gcc / g++ is installed by default on most Linux distros
@@ -37,6 +37,7 @@ See the classroom instruction and code comments for more details on each of thes
 ## Basic Build Instructions
 
 1. Clone this repo.
-2. Make a build directory in the top level directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make`
-4. Run it: `./2D_feature_tracking`.
+1. Make a build directory in the top level directory: `mkdir build && cd build`
+1. Set path: `export CMAKE_PREFIX_PATH="/Users/daniel/code/opencv/build`
+1. Compile: `cmake .. && make`
+1. Run it: `./2D_feature_tracking`.
