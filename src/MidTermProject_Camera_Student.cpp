@@ -61,7 +61,7 @@ int main(int argc, const char *argv[])
         dataBuffer.push_back(frame);
 
         //// EOF STUDENT ASSIGNMENT
-        cout << "#1 : LOAD IMAGE INTO BUFFER done" << endl;
+        cout << "#1 : LOAD IMAGE INTO BUFFER done, size = " << dataBuffer.size() << endl;
 
         /* DETECT IMAGE KEYPOINTS */
 

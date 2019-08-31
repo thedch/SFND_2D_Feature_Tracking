@@ -19,7 +19,7 @@ template <class T>
 class RingBuffer {
 public:
     RingBuffer(size_t size) {
-        size_t max_size_ = size;
+        max_size_ = size;
         std::deque<T> _buffer;
     }
 
