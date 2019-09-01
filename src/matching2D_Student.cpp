@@ -79,14 +79,13 @@ void detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool b
     cv::goodFeaturesToTrack(img, corners, maxCorners, qualityLevel, minDistance, cv::Mat(), blockSize, false, k);
 
     // add corners to result vector
-    for (auto it = corners.begin(); it != corners.end(); ++it)
-    {
-
+    for (auto it = corners.begin(); it != corners.end(); ++it) {
         cv::KeyPoint newKeyPoint;
         newKeyPoint.pt = cv::Point2f((*it).x, (*it).y);
         newKeyPoint.size = blockSize;
         keypoints.push_back(newKeyPoint);
     }
+
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
     cout << "Shi-Tomasi detection with n=" << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
 
@@ -99,5 +98,41 @@ void detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool b
         cv::namedWindow(windowName, 6);
         imshow(windowName, visImage);
         cv::waitKey(0);
+    }
+}
+
+void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis) {
+    cv::Mat dst, dst_norm, dst_norm_scaled;
+    dst = cv::Mat::zeros(img.size(), CV_32FC1);
+
+    // Detector parameters
+    int blockSize = 4;
+    int apertureSize = 3;
+    double k = 0.04;
+    int thresh = 200;
+
+    cv::cornerHarris(img, dst, blockSize, apertureSize, k, cv::BORDER_DEFAULT);
+    cv::normalize(dst, dst_norm, 0, 255, cv::NORM_MINMAX, CV_32FC1, cv::Mat());
+    cv::convertScaleAbs(dst_norm, dst_norm_scaled);
+
+    for(int j = 0; j < dst_norm.rows ; j++ ) { // y
+        for(int i = 0; i < dst_norm.cols; i++ ) { // x
+            if((int) dst_norm.at<float>(j,i) > thresh ) {
+                cv::KeyPoint newKeyPoint;
+                newKeyPoint.pt = cv::Point2f(i, j);
+                newKeyPoint.size = 1;
+                keypoints.push_back(newKeyPoint);
+              }
+          }
+     }
+
+     // TODO: NMS
+}
+
+
+void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis) {
+    if (detectorType.compare("FAST") == 0) {
+        cv::Ptr<cv::FastFeatureDetector> FAST = cv::FastFeatureDetector::create( );
+        FAST->detect(img, keypoints);
     }
 }
