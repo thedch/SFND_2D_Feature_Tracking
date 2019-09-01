@@ -59,15 +59,9 @@ int main(int argc, const char *argv[])
         //// EOF STUDENT ASSIGNMENT
         cout << "#1 : LOAD IMAGE INTO BUFFER done, size = " << dataBuffer.size() << endl;
 
-        /* DETECT IMAGE KEYPOINTS */
-
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
         string detectorType = "SIFT";
-
-        //// STUDENT ASSIGNMENT
-        //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
-        //// -> HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
         if (detectorType.compare("SHITOMASI") == 0) {
             detKeypointsShiTomasi(keypoints, imgGray, bVis);
@@ -77,17 +71,19 @@ int main(int argc, const char *argv[])
             detKeypointsModern(keypoints, imgGray, detectorType, bVis);
         }
 
-        //// EOF STUDENT ASSIGNMENT
-
-        //// STUDENT ASSIGNMENT
-        //// TASK MP.3 -> only keep keypoints on the preceding vehicle
-
         // only keep keypoints on the preceding vehicle
         bool bFocusOnVehicle = true;
+        // top left = 535, 180, w = 180, h = 150
         cv::Rect vehicleRect(535, 180, 180, 150);
-        if (bFocusOnVehicle)
-        {
-            // ...
+        if (bFocusOnVehicle) {
+            vector<cv::KeyPoint> tmp_keypoints;
+            for (auto keypt : keypoints) {
+                if (keypt.pt.x > 535 && keypt.pt.x < (535+180) &&
+                    keypt.pt.y > 180 && keypt.pt.y < (180+150)) {
+                    tmp_keypoints.push_back(keypt);
+                }
+            }
+            keypoints.assign(tmp_keypoints.begin(), tmp_keypoints.end());
         }
 
         //// EOF STUDENT ASSIGNMENT
