@@ -1,4 +1,5 @@
 #include <numeric>
+#include <stdexcept>
 #include "matching2D.hpp"
 
 using namespace std;
@@ -130,9 +131,24 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool
 }
 
 
+// FAST, BRISK, ORB, AKAZE, SIFT
 void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis) {
     if (detectorType.compare("FAST") == 0) {
-        cv::Ptr<cv::FastFeatureDetector> FAST = cv::FastFeatureDetector::create( );
+        cv::Ptr<cv::FastFeatureDetector> FAST = cv::FastFeatureDetector::create();
         FAST->detect(img, keypoints);
+    } else if (detectorType.compare("BRISK") == 0) {
+        cv::Ptr<cv::BRISK> BRISK = cv::BRISK::create();
+        BRISK->detect(img, keypoints);
+    } else if (detectorType.compare("ORB") == 0) {
+        cv::Ptr<cv::ORB> ORB = cv::ORB::create();
+        ORB->detect(img, keypoints);
+    } else if (detectorType.compare("AKAZE") == 0) {
+        cv::Ptr<cv::AKAZE> AKAZE = cv::AKAZE::create();
+        AKAZE->detect(img, keypoints);
+    } else if (detectorType.compare("SIFT") == 0) {
+        cv::Ptr<cv::xfeatures2d::SIFT> SIFT = cv::xfeatures2d::SIFT::create();
+        SIFT->detect(img, keypoints);
+    } else {
+        throw std::invalid_argument("Unknown detector type!");
     }
 }
