@@ -41,3 +41,43 @@ See the classroom instruction and code comments for more details on each of thes
 1. Set path: `export CMAKE_PREFIX_PATH="/Users/daniel/code/opencv/build`
 1. Compile: `cmake .. && make`
 1. Run it: `./2D_feature_tracking`.
+
+## Runtime evaluation
+
+| Detector | Descriptor | Num KeyPts | Detection (ms) | Extraction (ms) |
+| -------- | ---------- | ---------- | -------------- | --------------- |
+| SHITOMASI | BRISK | 1300  | 7 | 1 |
+| SHITOMASI | ORB | 1300  | 7 | 0.5 |
+| SHITOMASI | FREAK | 1300  | 7 | 0.35 |
+| SHITOMASI | AKAZE | 1300  | 7 | 0.35 |
+| SHITOMASI | SIFT  | 1300  | 7 | 0.45 |
+| HARRIS  | BRISK | 10  | 7 | 0.21 |
+| HARRIS  | ORB | 10  | 7 | 0.16 |
+| HARRIS  | FREAK | 10  | 7 | 0.2 |
+| HARRIS  | AKAZE | 10  | 7 | 0.16 |
+| HARRIS  | SIFT  | 10  | 8 | 0.22 |
+| FAST  | BRISK | 5000  | 1.5 | 3.1 |
+| FAST  | ORB | 5000  | 1.5 | 0.77 |
+| FAST  | FREAK | 5000  | 1.5 | 0.95 |
+| FAST  | AKAZE | 5000  | 1.5 | 0.75 |
+| FAST  | SIFT  | 5000  | 1.5 | 0.85 |
+| BRISK | BRISK | 2500  | 150 | 2.3 |
+| BRISK | ORB | 2500  | 150 | 0.55 |
+| BRISK | FREAK | 2500  | 150 | 0.55 |
+| BRISK | AKAZE | 2500  | 150 | 0.61 |
+| BRISK | SIFT  | 2500  | 150 | 0.56 |
+| ORB | BRISK | 500 | 4.5 | 1.1 |
+| ORB | ORB | 500 | 4.5 | 0.45 |
+| ORB | FREAK | 500 | 4.5 | 0.34 |
+| ORB | AKAZE | 500 | 4.5 | 0.41 |
+| ORB | SIFT  | 500 | 4.5 | 0.55 |
+| AKAZE | BRISK | 1300  | 45  | 1.4 |
+| AKAZE | ORB | 1300  | 45  | 1.3 |
+| AKAZE | FREAK | 1300  | 45  | 1.2 |
+| AKAZE | AKAZE | 1300  | 45  | 0.8 |
+| AKAZE | SIFT  | 1300  | 45  | 1.2 |
+| SIFT  | BRISK | 1400  | 72  | 1.1 |
+| SIFT  | ORB | 1400  | 72  | 1.2 |
+| SIFT  | FREAK | 1400  | 72  | 1.1 |
+| SIFT  | AKAZE | 1400  | 72  | 1.1 |
+| SIFT  | SIF | 1400  | 72  | 1.1 |

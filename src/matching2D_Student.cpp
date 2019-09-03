@@ -6,8 +6,7 @@ using namespace std;
 
 // Find best matches for keypoints in two camera images based on several matching methods
 void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
-                      std::vector<cv::DMatch> &matches, std::string descriptorType, std::string matcherType, std::string selectorType) {
-    // TODO: Delete descriptorType argument
+                      std::vector<cv::DMatch> &matches, std::string matcherType, std::string selectorType) {
     bool crossCheck = false;
     cv::Ptr<cv::DescriptorMatcher> matcher;
 
@@ -121,6 +120,7 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool
     int apertureSize = 3;
     double k = 0.04;
     int thresh = 200;
+    double t = (double)cv::getTickCount();
 
     cv::cornerHarris(img, dst, blockSize, apertureSize, k, cv::BORDER_DEFAULT);
     cv::normalize(dst, dst_norm, 0, 255, cv::NORM_MINMAX, CV_32FC1, cv::Mat());
@@ -136,9 +136,14 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool
               }
           }
      }
+
+     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+     cout << "Harris detection with n=" << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
 }
 
 void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis) {
+    double t = (double)cv::getTickCount();
+
     if (detectorType.compare("FAST") == 0) {
         cv::Ptr<cv::FastFeatureDetector> FAST = cv::FastFeatureDetector::create();
         FAST->detect(img, keypoints);
@@ -157,4 +162,8 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     } else {
         throw std::invalid_argument("Unknown detector type!");
     }
+
+    t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+    cout << detectorType << " detection with n=" << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+
 }

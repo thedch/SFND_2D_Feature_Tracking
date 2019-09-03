@@ -59,6 +59,8 @@ int main(int argc, const char *argv[]) {
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
         string detectorType = "SIFT";
+        string descriptorType = "SIFT";
+
 
         if (detectorType.compare("SHITOMASI") == 0) {
             detKeypointsShiTomasi(keypoints, imgGray, bVis);
@@ -98,17 +100,16 @@ int main(int argc, const char *argv[]) {
 
         // push keypoints and descriptor for current frame to end of data buffer
         (dataBuffer.end() - 1)->keypoints = keypoints;
-        cout << "#2 : DETECT KEYPOINTS done" << endl;
+        // cout << "#2 : DETECT KEYPOINTS done" << endl;
 
         /* EXTRACT KEYPOINT DESCRIPTORS */
         cv::Mat descriptors;
-        string descriptorType = "BRISK"; // BRIEF, ORB, FREAK, AKAZE, SIFT
         descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
 
         // push descriptors for current frame to end of data buffer
         (dataBuffer.end() - 1)->descriptors = descriptors;
 
-        cout << "#3 : EXTRACT DESCRIPTORS done" << endl;
+        // cout << "#3 : EXTRACT DESCRIPTORS done" << endl;
 
         if (dataBuffer.size() > 1) // wait until at least two images have been processed
         {
@@ -116,19 +117,17 @@ int main(int argc, const char *argv[]) {
             /* MATCH KEYPOINT DESCRIPTORS */
 
             vector<cv::DMatch> matches;
-            string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
-            string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG TODO: Delete this!
-            string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN
+            string matcherType = "MAT_BF"; // MAT_BF, MAT_FLANN
+            string selectorType = "SEL_KNN"; // SEL_NN, SEL_KNN
 
-            std::cout << "Before KNN match..." << std::endl;
             matchDescriptors((dataBuffer.end() - 2)->keypoints, (dataBuffer.end() - 1)->keypoints,
                              (dataBuffer.end() - 2)->descriptors, (dataBuffer.end() - 1)->descriptors,
-                             matches, descriptorType, matcherType, selectorType);
+                             matches, matcherType, selectorType);
 
             // store matches in current data frame
             (dataBuffer.end() - 1)->kptMatches = matches;
 
-            cout << "#4 : MATCH KEYPOINT DESCRIPTORS done" << endl;
+            // cout << "#4 : MATCH KEYPOINT DESCRIPTORS done" << endl;
 
             // visualize matches between current and previous image
             bVis = true;
@@ -145,7 +144,7 @@ int main(int argc, const char *argv[]) {
                 cv::namedWindow(windowName, 7);
                 cv::imshow(windowName, matchImg);
                 cout << "Press key to continue to next image" << endl;
-                cv::waitKey(0); // wait for key to be pressed
+                // cv::waitKey(0); // wait for key to be pressed
             }
             bVis = false;
         }
