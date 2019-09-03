@@ -18,10 +18,7 @@
 
 using namespace std;
 
-int main(int argc, const char *argv[])
-{
-
-    /* INIT VARIABLES AND DATA STRUCTURES */
+int main(int argc, const char *argv[]) {
 
     string dataPath = "../";
 
@@ -123,17 +120,12 @@ int main(int argc, const char *argv[])
             string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG TODO: Delete this!
             string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN
 
-            //// STUDENT ASSIGNMENT
-            //// TASK MP.6 -> add KNN match selection and perform
-
+            std::cout << "Before KNN match..." << std::endl;
             matchDescriptors((dataBuffer.end() - 2)->keypoints, (dataBuffer.end() - 1)->keypoints,
                              (dataBuffer.end() - 2)->descriptors, (dataBuffer.end() - 1)->descriptors,
                              matches, descriptorType, matcherType, selectorType);
 
-            //// EOF STUDENT ASSIGNMENT
-
             // store matches in current data frame
-            std::cout << "After KNN match..." << std::endl;
             (dataBuffer.end() - 1)->kptMatches = matches;
 
             cout << "#4 : MATCH KEYPOINT DESCRIPTORS done" << endl;

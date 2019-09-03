@@ -7,7 +7,7 @@ using namespace std;
 // Find best matches for keypoints in two camera images based on several matching methods
 void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
                       std::vector<cv::DMatch> &matches, std::string descriptorType, std::string matcherType, std::string selectorType) {
-    // configure matcher
+    // TODO: Delete descriptorType argument
     bool crossCheck = false;
     cv::Ptr<cv::DescriptorMatcher> matcher;
 
@@ -24,13 +24,19 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
         matcher->match(descSource, descRef, matches); // Finds the best match for each descriptor in desc1
     } else if (selectorType.compare("SEL_KNN") == 0) { // k nearest neighbors (k=2)
         int k = 2;
-        std::vector<std::vector<cv::DMatch>> wrapped_matches;
-        wrapped_matches.push_back(matches);
-        matcher->knnMatch(descSource, descRef, wrapped_matches, k);
+        std::vector<std::vector<cv::DMatch>> kmatches;
+        matcher->knnMatch(descSource, descRef, kmatches, k);
 
-        // compare the two nearest neighbors
-        std::cout << "Distance 0: " << matches[0].distance << " Distance 1: " << matches[1].distance << std::endl;
-        // descriptor distance ratio filtering with t=0.8
+        for (auto _kmatch : kmatches) {
+            if (_kmatch.size() >= 2) {
+                cv::DMatch match1 = _kmatch[0];
+                cv::DMatch match2 = _kmatch[1];
+                // descriptor distance ratio filtering with t=0.8
+                if (match1.distance < 0.8*match2.distance) {
+                    matches.push_back(match1);
+                }
+            }
+        }
     }
 }
 
@@ -130,8 +136,6 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool
               }
           }
      }
-
-     // TODO: NMS
 }
 
 void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis) {
