@@ -80,4 +80,16 @@ See the classroom instruction and code comments for more details on each of thes
 | SIFT  | ORB | 1400  | 72  | 1.2 |
 | SIFT  | FREAK | 1400  | 72  | 1.1 |
 | SIFT  | AKAZE | 1400  | 72  | 1.1 |
-| SIFT  | SIF | 1400  | 72  | 1.1 |
+| SIFT  | SIFT | 1400  | 72  | 1.1 |
+
+## Analysis
+
+For a real time autonomous system, I recommend the following detector / descriptor combinations:
+
+```
+FAST / ORB
+FAST / AKAZE
+FAST / SIFT
+```
+
+FAST produces a significant amount of keypts, and does so very quickly. The accuracy remains to be seen, but the runtime is very attractive.
