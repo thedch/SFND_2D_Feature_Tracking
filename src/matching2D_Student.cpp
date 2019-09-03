@@ -6,53 +6,58 @@ using namespace std;
 
 // Find best matches for keypoints in two camera images based on several matching methods
 void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
-                      std::vector<cv::DMatch> &matches, std::string descriptorType, std::string matcherType, std::string selectorType)
-{
+                      std::vector<cv::DMatch> &matches, std::string descriptorType, std::string matcherType, std::string selectorType) {
     // configure matcher
     bool crossCheck = false;
     cv::Ptr<cv::DescriptorMatcher> matcher;
 
-    if (matcherType.compare("MAT_BF") == 0)
-    {
+    if (matcherType.compare("MAT_BF") == 0) {
         int normType = cv::NORM_HAMMING;
         matcher = cv::BFMatcher::create(normType, crossCheck);
-    }
-    else if (matcherType.compare("MAT_FLANN") == 0)
-    {
-        // ...
+    } else if (matcherType.compare("MAT_FLANN") == 0) {
+        // take care of the datatype you are inputting to FLANN!
+        matcher = cv::FlannBasedMatcher::create();
     }
 
     // perform matching task
-    if (selectorType.compare("SEL_NN") == 0)
-    { // nearest neighbor (best match)
-
+    if (selectorType.compare("SEL_NN") == 0) { // nearest neighbor (best match)
         matcher->match(descSource, descRef, matches); // Finds the best match for each descriptor in desc1
-    }
-    else if (selectorType.compare("SEL_KNN") == 0)
-    { // k nearest neighbors (k=2)
+    } else if (selectorType.compare("SEL_KNN") == 0) { // k nearest neighbors (k=2)
+        int k = 2;
+        std::vector<std::vector<cv::DMatch>> wrapped_matches;
+        wrapped_matches.push_back(matches);
+        matcher->knnMatch(descSource, descRef, wrapped_matches, k);
 
-        // ...
+        // compare the two nearest neighbors
+        std::cout << "Distance 0: " << matches[0].distance << " Distance 1: " << matches[1].distance << std::endl;
+        // descriptor distance ratio filtering with t=0.8
     }
 }
 
 // Use one of several types of state-of-art descriptors to uniquely identify keypoints
-void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descriptors, string descriptorType)
-{
+void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descriptors, string descriptorType) {
     // select appropriate descriptor
     cv::Ptr<cv::DescriptorExtractor> extractor;
-    if (descriptorType.compare("BRISK") == 0)
-    {
-
+    if (descriptorType.compare("BRISK") == 0) {
         int threshold = 30;        // FAST/AGAST detection threshold score.
         int octaves = 3;           // detection octaves (use 0 to do single scale)
         float patternScale = 1.0f; // apply this scale to the pattern used for sampling the neighbourhood of a keypoint.
 
         extractor = cv::BRISK::create(threshold, octaves, patternScale);
-    }
-    else
-    {
 
-        //...
+    // BRIEF, ORB, FREAK, AKAZE and SIFT.
+    } else if (descriptorType.compare("BREIF")) {
+        extractor = cv::xfeatures2d::BriefDescriptorExtractor::create();
+    } else if (descriptorType.compare("ORB")) {
+        extractor = cv::ORB::create();
+    } else if (descriptorType.compare("FREAK")) {
+        extractor = cv::xfeatures2d::FREAK::create();
+    } else if (descriptorType.compare("AKAZE")) {
+        extractor = cv::AKAZE::create();
+    } else if (descriptorType.compare("SIFT")) {
+        extractor = cv::xfeatures2d::SIFT::create();
+    } else {
+        throw std::invalid_argument("Unknown detector type!");
     }
 
     // perform feature description
@@ -63,8 +68,7 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
 }
 
 // Detect keypoints in image using the traditional Shi-Thomasi detector
-void detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis)
-{
+void detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis) {
     // compute detector parameters based on image size
     int blockSize = 4;       //  size of an average block for computing a derivative covariation matrix over each pixel neighborhood
     double maxOverlap = 0.0; // max. permissible overlap between two features in %
@@ -129,7 +133,6 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool
 
      // TODO: NMS
 }
-
 
 void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis) {
     if (detectorType.compare("FAST") == 0) {
