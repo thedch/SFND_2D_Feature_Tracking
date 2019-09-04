@@ -77,8 +77,7 @@ int main(int argc, const char *argv[]) {
         if (bFocusOnVehicle) {
             vector<cv::KeyPoint> tmp_keypoints;
             for (auto keypt : keypoints) {
-                if (keypt.pt.x > 535 && keypt.pt.x < (535+180) &&
-                    keypt.pt.y > 180 && keypt.pt.y < (180+150)) {
+                if (vehicleRect.contains(keypt.pt)) {
                     tmp_keypoints.push_back(keypt);
                 }
             }
@@ -144,7 +143,7 @@ int main(int argc, const char *argv[]) {
                 cv::namedWindow(windowName, 7);
                 cv::imshow(windowName, matchImg);
                 cout << "Press key to continue to next image" << endl;
-                // cv::waitKey(0); // wait for key to be pressed
+                cv::waitKey(0); // wait for key to be pressed
             }
             bVis = false;
         }

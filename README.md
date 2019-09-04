@@ -2,14 +2,62 @@
 
 <img src="images/keypoints.png" width="820" height="248" />
 
-The idea of the camera course is to build a collision detection system - that's the overall goal for the Final Project. As a preparation for this, you will now build the feature tracking part and test various detector / descriptor combinations to see which ones perform best. This mid-term project consists of four parts:
+## Rubric Points
 
-* First, you will focus on loading images, setting up data structures and putting everything into a ring buffer to optimize memory load.
-* Then, you will integrate several keypoint detectors such as HARRIS, FAST, BRISK and SIFT and compare them with regard to number of keypoints and speed.
-* In the next part, you will then focus on descriptor extraction and matching using brute force and also the FLANN approach we discussed in the previous lesson.
-* In the last part, once the code framework is complete, you will test the various algorithms in different combinations and compare them with regard to some performance measures.
+### MP.1 Data Buffer Optimization
 
-See the classroom instruction and code comments for more details on each of these parts. Once you are finished with this project, the keypoint matching part will be set up and you can proceed to the next lesson, where the focus is on integrating Lidar points and on object detection using deep-learning.
+I started out trying to design my own ring buffer using a custom class holding an
+array, but after some research, implementing my own `.begin()` and `.end()` seemed
+pretty difficult, so I ended up just writing a light wrapper around `std::deque`,
+which seems to work quite well.
+
+### MP.2 Keypoint Detection
+
+HARRIS, FAST, BRISK, ORB, AKAZE, and SIFT all have standard APIs in OpenCV, so
+adding them wasn't that hard. OpenCV docs leave a little to be desired at some points,
+but overall this was pretty simple.
+
+### MP.3 Keypoint Removal
+
+The provided `cv::Rect` is convenient, as the `.contains()` methods allows for easy
+bounds checking for each keypoint.
+
+### MP.4 Keypoint Descriptors
+
+Similar to MP.2, adding these in was not difficult due to the standard OpenCV API.
+
+### MP.5 Descriptor Matching
+
+FLANN was fairly easy to understand, but KNN took a bit of documentation searching
+before I figured out how to set it up.
+
+### MP.6 Descriptor Distance Ratio
+
+This took me some time to figure out -- after some searching around I finally found
+a snippet (and the associated paper!) that introduced the descriptor distance
+ratio test, and I was able to adapt the algorithm for my usage without issue. It
+wasn't immediately intuitive as to why this was beneficial, but after some thought
+I came to appreciate the comparison between the two match distances!
+
+### MP.7 Performance Evaluation 1
+
+While a little brute force, this was a nice investigation into the nuances of each detector.
+I considered setting up some sort of Command Line Interface and using a bash script
+to run through each one, but I decided that would be a little overkill. Instead I
+just switched the strings and reran each time.
+
+### MP.8 Performance Evaluation 2
+
+Increasingly brute force here -- with each combination of detector and descriptor,
+the number of runs really adds up! Thankfully, leaving the descriptor distance ratio
+test at 0.8 instead of switching it was well made the number of runs tractable.
+
+### MP.9 Performance Evaluation 3
+
+This was the most exciting -- logging the runtime gave me a great intuition for
+how long each combination took, and looking at the number of keypoints generated
+gave me an understanding of the time per keypoint for the descriptors.
+
 
 ## Dependencies for Running Locally
 * cmake >= 2.8
@@ -44,8 +92,8 @@ See the classroom instruction and code comments for more details on each of thes
 
 ## Runtime evaluation
 
-| Detector | Descriptor | Num KeyPts | Detection (ms) | Extraction (ms) |
-| -------- | ---------- | ---------- | -------------- | --------------- |
+| Detector | Descriptor | Num KeyPts (approx) | Detection (ms) | Extraction (ms) |
+| -------- | ---------- | ------------------- | -------------- | --------------- |
 | SHITOMASI | BRISK | 1300  | 7 | 1 |
 | SHITOMASI | ORB | 1300  | 7 | 0.5 |
 | SHITOMASI | FREAK | 1300  | 7 | 0.35 |
